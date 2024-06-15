@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# This bash script can be run before commits.
+# It will check if the code is formatted correctly and if the tests pass.
+#
+# Generally speaking, these tools will be run by hand, but this script can be
+# used to automate the process and/or serve as a reference for the tools used.
+#
+
+
+# cd to the directory of the script
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+# Run flake8 to check for PEP8 compliance
+echo
+echo "Running flake8..."
+flake8
+
+
+# Run type-checking with mypy
+echo
+echo "Running mypy..."
+mypy
+
+# Run unit tests with pytest
+echo
+echo "Running pytest..."
+pytest
