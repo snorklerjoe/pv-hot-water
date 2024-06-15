@@ -1,4 +1,5 @@
 # pv-hot-water
+
 Control software for a custom photovoltaic solar hot water setup.  
 The system consists of an array of solar panels providing two circuits.
 There is an exterior GFCI panel, an interior panel, and a pair of electric

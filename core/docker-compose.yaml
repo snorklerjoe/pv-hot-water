@@ -1,0 +1,7 @@
+# Make sure to configure UNIX socket between daemon and api
+
+# Webapp should stay isolated except for an authentication credential schema.
+# While sharing the same database, the webapp should only have access to the
+# credential schema and the API and daemon should have access to a data schema.
+
+# Ephemeral states will be stored by the daemon and the API can access them via the UNIX socket.
