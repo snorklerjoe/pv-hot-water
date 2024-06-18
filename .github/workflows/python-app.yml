@@ -15,6 +15,10 @@ permissions:
 jobs:
   build:
 
+    defaults:
+      run:
+        working-directory: ./core/
+
     runs-on: ubuntu-latest
 
     steps:
