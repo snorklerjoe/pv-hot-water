@@ -1,5 +1,7 @@
 # pv-hot-water
 
+[![Python application](https://github.com/snorklerjoe/pv-hot-water/actions/workflows/python-app.yml/badge.svg)](https://github.com/snorklerjoe/pv-hot-water/actions/workflows/python-app.yml)
+
 Control software for a custom photovoltaic solar hot water setup.  
 The system consists of an array of solar panels providing two circuits.
 There is an exterior GFCI panel, an interior panel, and a pair of electric
