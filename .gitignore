@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,flask,visualstudiocode,platformio
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask,visualstudiocode,platformio
 
+# Poetry
+poetry.lock
+
 ### Flask ###
 instance/*
 !instance/.gitignore
