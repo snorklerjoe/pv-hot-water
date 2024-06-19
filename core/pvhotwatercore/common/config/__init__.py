@@ -11,7 +11,7 @@ class Config:
     """Represents a single config file."""
 
     @staticmethod
-    def set_config_path(path: str | pathlib.Path):
+    def set_config_path(path: str | pathlib.Path) -> None:
         """Sets the global path for configuration files.
 
         This can only be called before a config object is initialized,
@@ -26,7 +26,7 @@ class Config:
         if not os.path.isdir(path):
             raise FileNotFoundError("Config path {path} does not exist.")
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str) -> None:
         """Initializes a given set of configuration.
 
         Args:
