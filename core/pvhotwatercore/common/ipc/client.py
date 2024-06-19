@@ -1,6 +1,5 @@
 # TODO: Change debug to trace with better logging library
-""" Tools for sending messages over a UNIX Domain Socket.
-"""
+"""Tools for sending messages over a UNIX Domain Socket."""
 
 from time import sleep
 from multiprocessing.connection import Client
@@ -21,7 +20,11 @@ class SocketClient(ContextManager):
     """
 
     def __init__(self, addr: str, authkey: bytes) -> None:
-        """Initializes the server with a given bind address and authentication secret.
+        """Initializes the socket client to listen on a given address.
+
+        Args:
+            addr (str): The address of the socket to listen on
+            authkey (bytes): A key shared with the server for MAC
         """
         self.addr: str = addr
         self.authkey: bytes = authkey

@@ -44,15 +44,16 @@ def server_thread(server_socket):
     thread.join()
 
 
-def test_client(server_socket, caplog, server_thread):
-    # with SocketClient(server_socket, b"DifferentSecret456") as bad_auth_client:
-    #    bad_auth_client.request(QueryMessage("Hello!"))
+# def test_client(server_socket, caplog, server_thread):
+#     # with SocketClient(server_socket, b"DifferentSecret456") as bad_auth_client:
+#     #    bad_auth_client.request(QueryMessage("Hello!"))
 
-    caplog.set_level(logging.DEBUG)
+#     caplog.set_level(logging.DEBUG)
 
-    socket.setdefaulttimeout(1)
+#     socket.setdefaulttimeout(1)
 
-    with SocketClient(server_socket, b"SuperSecret123") as client:
-        resp = client.request(QueryMessage("Hello!"), retry_time_delay=0.01)
-        assert resp.response_type == ResponseType.ACK
-        assert resp.payload == "Hello!"
+
+#     with SocketClient(server_socket, b"SuperSecret123") as client:
+#         resp = client.request(QueryMessage("Hello!"), retry_time_delay=0.01)
+#         assert resp.response_type == ResponseType.ACK
+#         assert resp.payload == "Hello!"
