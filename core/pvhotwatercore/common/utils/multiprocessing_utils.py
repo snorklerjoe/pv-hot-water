@@ -1,5 +1,4 @@
-""" Some generic utilities for multiprocessing-related stuff
-"""
+"""Generic utilities for multiprocessing."""
 
 from threading import Lock
 

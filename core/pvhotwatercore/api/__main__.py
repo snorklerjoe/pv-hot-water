@@ -1,4 +1,3 @@
-""" Serves the RESTful API.
-"""
+"""Serves the RESTful API."""
 
 print("Hello World from the API!")

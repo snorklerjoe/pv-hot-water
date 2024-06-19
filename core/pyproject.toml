@@ -11,5 +11,15 @@ authors = ["Joseph R. Freeston"]
 [tool.poetry.dependencies]
 python = "^3.12"
 flake8 = "^7.1.0"
+flake8-docstrings = "^1.7.0"
+flake8-annotations = "^3.1.1"
 mypy = "^1.10.0"
 pytest = "^8.2.2"
+coverage = "^7.5.3"
+
+flask = "^3.0.3"
+flask-login = "^0.6.3"
+flask-sqlalchemy = "^3.1.1"
+flask-wtf = "^1.2.1"
+scrypt = "^0.8.24"
+tomlkit = "^0.12.5"

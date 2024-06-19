@@ -1,2 +1,1 @@
-""" Common modules to be used by multiple containers.
-"""
+"""Common modules to be used by multiple containers."""

@@ -1,5 +1,4 @@
-""" This obtains the webapp runtime configuration from .env and environment variables.
-"""
+"""This obtains the webapp runtime configuration from .env and environment variables."""
 
 import os
 from typing import Any, Dict

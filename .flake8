@@ -1,4 +1,9 @@
 [flake8]
-ignore = W503
+ignore = W503,ANN101
 max-line-length = 88
 exclude = .git,__pycache__,dist,platformio_projects,build,docs,.venv,Docker
+
+docstring-convention=google
+
+per-file-ignores =
+    **/tests/**:D100,D103,ANN201

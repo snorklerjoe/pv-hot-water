@@ -1,17 +1,20 @@
+"""Tests the IPC structure code."""
+
 import pytest
 from pvhotwatercore.common.ipc.structs import (
     _MessageType, PingMessage, PushMessage, QueryMessage, Message,
-    Response, ResponseType, SimpleResponse
+    Response, ResponseType, SimpleResponse, InvalidResponseException
 )
 from typing import override, Type
 
 
 def test_message():
+    """Tests the general API for representing Messages."""
     class TestMessage(Message[str]):
         def __init__(self):
             super().__init__(
                 message_type=_MessageType.PUSH,
-                payload="Test Payload"
+                payload="Hey Peter man!"
             )
 
         @override
@@ -21,7 +24,7 @@ def test_message():
     test_msg = TestMessage()
     assert isinstance(test_msg, Message)
     assert test_msg.message_type == _MessageType.PUSH
-    assert test_msg.payload == "Test Payload"
+    assert test_msg.payload == "Hey Peter man!"
     assert isinstance(test_msg.payload, str)
     assert test_msg.validate_response(None)
 
@@ -35,6 +38,7 @@ def test_message():
 
 
 def test_ping_message():
+    """Tests the Message sub-class PingMessage."""
     ping = PingMessage()
     assert ping.message_type == _MessageType.PING
     assert ping.payload is None
@@ -44,6 +48,7 @@ def test_ping_message():
 
 
 def test_push_message():
+    """Tests the Message sub-class PushMessage."""
     payload = "Hello, World!"
     push = PushMessage(payload)
     assert push.message_type == _MessageType.PUSH
@@ -54,6 +59,7 @@ def test_push_message():
 
 
 def test_query_message():
+    """Tests the Message sub-class QueryMessage."""
     class MyStr(str):
         pass
     query = MyStr("SELECT * FROM users")
@@ -76,6 +82,7 @@ def test_query_message():
 
 
 def test_response():
+    """Tests the general API for representing responses to messages."""
     response_type = ResponseType.ACK
     payload = {"status": "success"}
     response = Response(response_type, payload)
@@ -83,7 +90,8 @@ def test_response():
     assert response.payload == payload
 
 
-def test_simple_response_with_both_types():
+def test_simple_response():
+    """Tests the SimpleResponse class."""
     # Test with True value
     simple_response = SimpleResponse(True)
     assert simple_response.response_type == ResponseType.ACK
@@ -100,3 +108,12 @@ def test_simple_response_with_both_types():
     # Test with NAK value
     simple_response = SimpleResponse(ResponseType.NAK)
     assert simple_response.response_type == ResponseType.NAK
+
+
+def test_InvalidResponseException():
+    """Tests that we can give a message to InvalidResponseException."""
+    a = InvalidResponseException()
+    assert str(a) == ''
+
+    a = InvalidResponseException("Hello World!")
+    assert str(a) == "Hello World!"

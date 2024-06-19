@@ -1,3 +1,1 @@
-""" Basic Inter-Process Communication (IPC) helpers
-
-"""
+"""Basic Inter-Process Communication (IPC) helpers."""

@@ -1,3 +1,5 @@
+"""Tests multiprocessing utilities."""
+
 from threading import Lock, Thread, Event
 from pvhotwatercore.common.utils.multiprocessing_utils import lock_wait
 
