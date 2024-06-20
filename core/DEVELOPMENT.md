@@ -76,3 +76,16 @@ poetry run coverage report
 # To see the coverage report with line numbers of places missing coverage:
 poetry run coverage report -m
 ```
+
+### Flask Debug Server
+
+To test the webapp (this also applies for the api), the Flask development server may be used.  
+To run the web app with development server locally on your computer, use the following (from the `/core` directory):
+
+``` bash
+FLASK_DEBUG=1 flask --app pvhotwatercore.webapp.app run
+```
+
+**TODO: add a poetry script or something based on the toml config files to facilitate this.**
+
+A test page should exist at `/test-page/` from the root of the webserver (such as `http://localhost:5000/test-page/`).

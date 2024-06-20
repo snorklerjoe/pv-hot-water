@@ -1,2 +1,15 @@
+{% extends "layouts/base.html" %}
+{% block title %}Test Page{% endblock %}
 
-<span>Hello World!</span>
+{% block header %}
+    <h4 class="alert alert-info">This is a test page!</h4>
+{% endblock %}
+
+{% block content %}
+    <div class="alert alert-primary" role="alert">
+        <h5 class="alert-heading">It Works!</h5>
+        <p>
+            The Flask webapp is up and running!
+        </p>
+    </div>
+{% endblock %}

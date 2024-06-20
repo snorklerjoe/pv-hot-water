@@ -1,0 +1,45 @@
+{# A base template for all pages. #}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+            <!-- Assets: -->
+            {% block assets %}
+            <!--<link rel="style/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">-->
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/lux/bootstrap.min.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+            <title>{% block title %}{% endblock %} - Solar Control</title>
+            {% endblock %}
+
+            {% endblock %}
+    </head>
+    <body>
+            {% block navbar %}
+            {% endblock %}
+
+            {% if HOLD_FLASHED_MESSAGES is not defined %}
+                {{util.flashed_messages()}}
+            {% endif %}
+
+            {% block header %}
+            {% endblock %}
+            
+            {% block content %}
+            {% endblock %}
+
+            {% block footer %}
+            {% endblock %}
+
+    </body>
+</html>
