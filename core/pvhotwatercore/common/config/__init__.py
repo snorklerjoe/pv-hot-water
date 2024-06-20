@@ -14,6 +14,9 @@ from tomlkit import load, TOMLDocument
 from tomlkit.container import Container
 from tomlkit.items import Item
 
+# Valid config files will end with this
+VALID_CONFIG_EXTENSION = ".toml"
+
 
 class Config:
     """Represents a single config file.
@@ -74,12 +77,18 @@ class Config:
             filename (str): Filename of toml config file, without a path
 
         Raises:
-            ValueError: if filename contains a path separator
+            ValueError: if filename contains a path separator or does not have the
+                right extension
         """
         if os.sep in filename:
             raise ValueError("Filename cannot contain a path. "
                              "The config search path should be established statically"
                              "with Config.set_config_path()")
+
+        if not filename.endswith(VALID_CONFIG_EXTENSION):
+            raise ValueError(
+                f"The filename must end in {VALID_CONFIG_EXTENSION}."
+            )
 
         Config._CONFIG_PATH_ACCESSED = True
 

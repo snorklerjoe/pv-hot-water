@@ -118,3 +118,29 @@ def test_config_load(tmp_conf_path):
     assert a['Test']['a'] == 2
     assert a['Test']['b'] == "bumble"
     assert a['Test']['today']['napoleon']['plan'] == "whateverIFeelLikeGosh"
+
+
+def test_instantiation_with_fullpath():
+    with pytest.raises(ValueError):
+        config.Config("a" + os.sep + "b.toml")  # Contains os.sep
+
+    try:
+        assert config.Config("b.toml") is not None
+    except FileNotFoundError:
+        pass
+
+
+def test_instantiation_with_badext():
+    with pytest.raises(ValueError):
+        config.Config("test.conf")
+    with pytest.raises(ValueError):
+        config.Config("test.yaml")
+    with pytest.raises(ValueError):
+        config.Config("test.json")
+    with pytest.raises(ValueError):
+        config.Config("test.ini")
+
+    try:
+        assert config.Config("test.toml") is not None
+    except FileNotFoundError:
+        pass
