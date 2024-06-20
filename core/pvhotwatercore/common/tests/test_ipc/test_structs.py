@@ -11,7 +11,7 @@ from typing import override, Type
 def test_message():
     """Tests the general API for representing Messages."""
     class TestMessage(Message[str]):
-        def __init__(self):
+        def __init__(self) -> None:
             super().__init__(
                 message_type=_MessageType.PUSH,
                 payload="Hey Peter man!"

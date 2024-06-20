@@ -1,4 +1,4 @@
-from pvhotwatercore.common.utils import python_utils
+from pvhotwatercore.common.utils.misc import inherit_docstring
 
 
 def test_inherit_docstring():
@@ -8,7 +8,7 @@ def test_inherit_docstring():
         """This is a superclass method."""
         return 1
 
-    @python_utils.inherit_docstring(superclass_method)
+    @inherit_docstring.inherit_docstring(superclass_method)
     def subclass_method():
         return 2
 

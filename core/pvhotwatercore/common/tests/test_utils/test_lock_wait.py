@@ -1,7 +1,7 @@
-"""Tests multiprocessing utilities."""
+"""Tests lock_wait utility."""
 
 from threading import Lock, Thread, Event
-from pvhotwatercore.common.utils.multiprocessing_utils import lock_wait
+from pvhotwatercore.common.utils.multiprocessing.lock_wait import lock_wait
 
 
 def test_lock_wait():
