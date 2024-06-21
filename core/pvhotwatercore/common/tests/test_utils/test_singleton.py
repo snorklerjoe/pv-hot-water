@@ -1,4 +1,5 @@
 import pytest
+from threading import Thread, Event
 from pvhotwatercore.common.utils.misc.singleton import (
     singleton,
     singleton_argenforce
@@ -49,3 +50,33 @@ def test_arg_enforcing_singleton_with_same_arguments(testclasses):
     assert instance1 is instance2, (
         "Both instances should be the same object when instantiated with the same args"
     )
+
+
+def test_singleton_with_threading(testclasses):
+    event = Event()  # Can call
+    event2 = Event()  # Can set Flag
+    event3 = Event()  # Can exit
+
+    class Flag:
+        flag = False
+
+    def get_instance_after_event():
+        event.wait()
+        Flag.flag = testclasses[0](False).value
+        event2.set()
+        event3.wait()
+
+    my_thread = Thread(target=get_instance_after_event)
+    my_thread.start()
+
+    assert testclasses[0](True).value
+
+    assert not Flag.flag
+
+    event.set()
+    event2.wait()
+    assert Flag.flag
+    event3.set()
+    my_thread.join()
+
+    assert Flag.flag
