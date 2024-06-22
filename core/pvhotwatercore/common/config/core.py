@@ -10,7 +10,28 @@ from tomlkit.container import Container
 from tomlkit.items import Item
 
 # Valid config files will end with this
-VALID_CONFIG_EXTENSION = ".toml"
+VALID_CONFIG_EXTENSION = '.toml'
+
+# Name of conf-dir-setting env variable
+CONF_DIR_ENV_NAME = 'PVHOTWATER_CONF_DIR'
+
+# If the conf dir was set by an env var, make sure it actually exists:
+if (
+    CONF_DIR_ENV_NAME in os.environ and not os.path.exists(
+        str(os.getenv(CONF_DIR_ENV_NAME)))
+):
+    raise FileNotFoundError(
+        f"Config directory {os.getenv(CONF_DIR_ENV_NAME)} does not exist."
+    )
+
+# The path of a directory containing all configuration files
+_CONFIG_PATH: str = os.getenv(CONF_DIR_ENV_NAME, '.')
+
+# Stores True once the config path has been accessed.
+_CONFIG_PATH_ACCESSED: bool = False
+
+# To be used only for unit testing.
+_IGNORE_PATH_ACCESSED: bool = False
 
 
 class ConfigBase(ABC):
@@ -23,14 +44,8 @@ class ConfigBase(ABC):
     which lessens the possibility of catastrophic failure.  :)
     """
 
-    # The path of a directory containing all configuration files
-    _CONFIG_PATH: str = os.getenv('PVHOTWATER_CONF_DIR', '.')
-
-    # Stores True once the config path has been accessed.
-    _CONFIG_PATH_ACCESSED: bool = False
-
-    @staticmethod
-    def get_config_path() -> str:
+    @classmethod
+    def get_config_path(cls) -> str:
         """Returns the config path.
 
         This value can never change once this method is called.
@@ -39,12 +54,18 @@ class ConfigBase(ABC):
             str | None: The path to a folder with all toml configuration files, or None
                 if no folder has been set with set_config_path() yet.
         """
-        if not ConfigBase._CONFIG_PATH_ACCESSED:
-            ConfigBase._CONFIG_PATH_ACCESSED = True
-        return ConfigBase._CONFIG_PATH
+        global _CONFIG_PATH
+        global _CONFIG_PATH_ACCESSED
+        global _IGNORE_PATH_ACCESSED
+        if cls.__name__ != 'ConfigBase':
+            logging.warning(f"{cls.__name__} -> Going to superclass")
+            return ConfigBase.get_config_path()
+        if not _CONFIG_PATH_ACCESSED:
+            _CONFIG_PATH_ACCESSED = True
+        return _CONFIG_PATH
 
-    @staticmethod
-    def set_config_path(path: str | pathlib.Path) -> None:
+    @classmethod
+    def set_config_path(cls, path: str | pathlib.Path) -> None:
         """Sets the global path for configuration files.
 
         This can only be called before a Config object is created and before
@@ -57,11 +78,20 @@ class ConfigBase(ABC):
             FileNotFoundError: if path does not exist or is not a directory
             ValueError: if the config path has already been set
         """
+        global _CONFIG_PATH
+        global _CONFIG_PATH_ACCESSED
+        global _IGNORE_PATH_ACCESSED
+        if cls.__name__ != 'ConfigBase':
+            raise NotImplementedError(
+                "You cannot set the config path from a subclass. "
+                "Please use ConfigBase.set_config_path()"
+            )
         if not os.path.isdir(path):
             raise FileNotFoundError("Config path `{path}` does not exist.")
-        if not ConfigBase._CONFIG_PATH_ACCESSED:
+
+        if (not _CONFIG_PATH_ACCESSED) or _IGNORE_PATH_ACCESSED:
             logging.info(f"Setting config path to {str(path)}.")
-            ConfigBase._CONFIG_PATH = str(path)
+            _CONFIG_PATH = str(path)
         else:
             raise ValueError("The config path has already been accessed.")
 
@@ -85,18 +115,22 @@ class ConfigBase(ABC):
                 f"The filename must end in {VALID_CONFIG_EXTENSION}."
             )
 
-        ConfigBase._CONFIG_PATH_ACCESSED = True
-
-        self._conf_file_path: str = os.path.join(ConfigBase._CONFIG_PATH, filename)
+        self._conf_file_path: str = os.path.join(ConfigBase.get_config_path(), filename)
 
         if not os.path.isfile(self._conf_file_path):
             raise FileNotFoundError(
-                f"The config file `{filename}` does not exist in the config directory."
+                f"The config file `{filename}` does not exist in the config directory "
+                f"{ConfigBase.get_config_path()}."
             )
 
         self.toml_obj: TOMLDocument
 
         self._load()
+
+    @property
+    def conf_path(self) -> str:
+        """The absolute configuration path."""
+        return os.path.abspath(self._conf_file_path)
 
     def _load(self) -> None:
         """Loads and parses the config file."""

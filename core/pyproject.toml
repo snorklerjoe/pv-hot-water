@@ -9,7 +9,11 @@ description = "Core software for controlling a custom photovoltaic hot water set
 authors = ["Joseph R. Freeston"]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+
+# We need Python because...
+python = "~3.12"
+
+# Style enforcement, linting, type-checking, unit tests...
 flake8 = "^7.1.0"
 flake8-docstrings = "^1.7.0"
 flake8-annotations = "^3.1.1"
@@ -17,10 +21,21 @@ mypy = "^1.10.0"
 pytest = "^8.2.2"
 coverage = "^7.5.3"
 
+# Web app and RESTful API
 flask = "^3.0.3"
 flask-login = "^0.6.3"
 flask-sqlalchemy = "^3.1.1"
 flask-wtf = "^1.2.1"
-scrypt = "^0.8.24"
-tomlkit = "^0.12.5"
 flask-bootstrap = "^3.3.7.1"
+
+# Hashing passwords securely
+scrypt = "^0.8.24"
+
+# Config file parsing & live reloads
+tomlkit = "^0.12.5"
+watchdog = "^4.0.1"
+
+[tool.coverage.run]
+omit = [
+    "**/tests/**"
+]

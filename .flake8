@@ -1,5 +1,5 @@
 [flake8]
-ignore = W503,ANN101
+ignore = W503,ANN101,ANN102
 max-line-length = 88
 exclude = .git,__pycache__,dist,platformio_projects,build,docs,.venv,Docker
 

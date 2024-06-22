@@ -37,64 +37,99 @@ def tmp_conf_path():
     os.rmdir(dirpath)
 
 
+def test_confpath_inheritance(tmp_conf_path):
+    # Tests that, when subclasses check to global config path, it's the right one.
+    core._CONFIG_PATH_ACCESSED = False
+    core.ConfigBase.set_config_path(".")
+    assert core.ConfigBase.get_config_path() == "."
+    assert SimpleConfig.get_config_path() == "."
+
+    core._CONFIG_PATH_ACCESSED = False
+    core.ConfigBase.set_config_path(tmp_conf_path)
+    assert core.ConfigBase.get_config_path() == tmp_conf_path
+    assert SimpleConfig.get_config_path() == tmp_conf_path
+
+
+def test_ignore_path_accessed(tmp_conf_path):
+    with pytest.raises(ValueError):
+        core.ConfigBase.set_config_path(tmp_conf_path)
+        core.ConfigBase.get_config_path()
+        # Cannot set it twice...
+        core.ConfigBase.set_config_path(tmp_conf_path)
+
+    core._IGNORE_PATH_ACCESSED = True
+    core.ConfigBase.set_config_path(tmp_conf_path)
+
+
+def test_set_path_from_subclass():
+    with pytest.raises(NotImplementedError):
+        SimpleConfig.set_config_path('')
+
+
 def test_default_config_path(monkeypatch):
     # Ensure the environment variable is not set
     monkeypatch.delenv('PVHOTWATER_CONF_DIR', raising=False)
-    assert SimpleConfig.get_config_path(
+    newcore = importlib.reload(core)
+    assert newcore.ConfigBase.get_config_path(
     ) == '.', "The default config.Config path should be '.'"
 
 
-def test_env_config_path(monkeypatch):
-    # Ensure the environment variable is not set
-    monkeypatch.setenv('PVHOTWATER_CONF_DIR', '/some/crazy/dir')
-    importlib.reload(core)
-    assert SimpleConfig.get_config_path() == '/some/crazy/dir'
+def test_env_config_path(monkeypatch, tmp_conf_path):
+    # With some nonexistant path
+    monkeypatch.setenv(core.CONF_DIR_ENV_NAME, '/some/crazy/dir')
+    with pytest.raises(FileNotFoundError):
+        newcore = importlib.reload(core)
+
+    # With a valid path
+    monkeypatch.setenv(core.CONF_DIR_ENV_NAME, tmp_conf_path)
+    newcore = importlib.reload(core)
+    assert newcore.ConfigBase.get_config_path() == tmp_conf_path
 
 
 def test_setting_and_getting_config_path(tmp_conf_path):
-    core.ConfigBase._CONFIG_PATH_ACCESSED = False  # Resetting for test
+    core._CONFIG_PATH_ACCESSED = False  # Resetting for test
     test_path = str(tmp_conf_path)
 
     # Does not exist
     with pytest.raises(FileNotFoundError):
-        SimpleConfig.set_config_path(
-            '/invalid/directory/that/cannot/exist/possibly/aoisdfasdufoaisgipadhfib'
+        core.ConfigBase.set_config_path(
+            '/inval1d/directory/that/cannot/exist/possibly/aoisdfasdufoaisgipadhfib'
         )
 
     # Is a directory
     with pytest.raises(FileNotFoundError):
-        SimpleConfig.set_config_path(os.path.join(tmp_conf_path, 'test.toml'))
+        core.ConfigBase.set_config_path(os.path.join(tmp_conf_path, 'test.toml'))
 
     # Set properly
-    SimpleConfig.set_config_path(test_path)
+    core.ConfigBase.set_config_path(test_path)
     assert SimpleConfig.get_config_path() == test_path
 
     # Already accessed
     with pytest.raises(ValueError):
-        SimpleConfig.set_config_path('.')
-    core.ConfigBase._CONFIG_PATH_ACCESSED = False  # Resetting for test
+        core.ConfigBase.set_config_path('.')
+    core._CONFIG_PATH_ACCESSED = False  # Resetting for test
 
     _ = SimpleConfig("test.toml")
 
     # Already accessed
     with pytest.raises(ValueError):
-        SimpleConfig.set_config_path('.')
+        core.ConfigBase.set_config_path('.')
 
 
 def test_config_path_persistence(tmp_conf_path):
-    core.ConfigBase._CONFIG_PATH_ACCESSED = False  # Resetting for test
+    core._CONFIG_PATH_ACCESSED = False  # Resetting for test
     test_path = str(tmp_conf_path)
-    SimpleConfig.set_config_path(test_path)
+    core.ConfigBase.set_config_path(test_path)
     # Attempt to set the path again should either fail or be ignored
     new_test_path = str(tmp_conf_path + "/new_dir")
     with pytest.raises((ValueError, FileNotFoundError)):
-        SimpleConfig.set_config_path(new_test_path)
+        core.ConfigBase.set_config_path(new_test_path)
     assert SimpleConfig.get_config_path() == test_path
 
 
 def test_config_load(tmp_conf_path):
-    core.ConfigBase._CONFIG_PATH_ACCESSED = False
-    SimpleConfig.set_config_path(tmp_conf_path)
+    core._CONFIG_PATH_ACCESSED = False
+    core.ConfigBase.set_config_path(tmp_conf_path)
 
     a = SimpleConfig("test.toml")
 
@@ -155,8 +190,8 @@ def test_instantiation_with_badext():
 
 
 def test_abstract_on_load(tmp_conf_path):
-    core.ConfigBase._CONFIG_PATH_ACCESSED = False
-    SimpleConfig.set_config_path(tmp_conf_path)
+    core._CONFIG_PATH_ACCESSED = False
+    core.ConfigBase.set_config_path(tmp_conf_path)
 
     class Counter:
         counter = 0
@@ -176,3 +211,10 @@ def test_abstract_on_load(tmp_conf_path):
     a.reload()
 
     assert Counter.counter == 3
+
+
+def test_abs_path(tmp_conf_path):
+    core._CONFIG_PATH_ACCESSED = False
+    core.ConfigBase.set_config_path(tmp_conf_path)
+    a = SimpleConfig("test.toml")
+    assert a.conf_path == os.path.abspath(tmp_conf_path) + os.sep + "test.toml"
