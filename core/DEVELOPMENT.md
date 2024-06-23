@@ -88,4 +88,8 @@ FLASK_DEBUG=1 flask --app pvhotwatercore.webapp.app run
 
 **TODO: add a poetry script or something based on the toml config files to facilitate this.**
 
-A test page should exist at `/test-page/` from the root of the webserver (such as `http://localhost:5000/test-page/`).
+A test page should then be available at `/test-page/` from the root of the webserver (such as `http://localhost:5000/test-page/`).
+
+## Default / Testing Configuration
+
+Configuration suitable for testing can be found in `/core/default_conf`. This will be copied into a Docker volume for production, and modified on the production server.  

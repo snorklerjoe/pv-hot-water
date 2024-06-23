@@ -1,4 +1,10 @@
-"""Config core."""
+"""Config core.
+
+Ultimately, this just serves as a file-handling wrapper for tomlkit.
+A tomlkit-generated mapping is the interface to the data, through all core config code.
+This allows for config validation without writing a file and thus bypassing all of this
+code that would be extraneous to simple validation.
+"""
 
 import os
 import pathlib
