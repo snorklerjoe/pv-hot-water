@@ -4,7 +4,6 @@
         "njpwerner.autodocstring",
         "ms-python.autopep8",
         "ms-azuretools.vscode-docker",
-        "tamasfe.even-better-toml",
         "ms-python.flake8",
         "yzhang.markdown-all-in-one",
         "davidanson.vscode-markdownlint",

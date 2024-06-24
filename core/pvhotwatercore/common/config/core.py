@@ -1,9 +1,6 @@
 """Config core.
 
-Ultimately, this just serves as a file-handling wrapper for tomlkit.
-A tomlkit-generated mapping is the interface to the data, through all core config code.
-This allows for config validation without writing a file and thus bypassing all of this
-code that would be extraneous to simple validation.
+Essentially wraps a string of json config.
 """
 
 import os
@@ -11,12 +8,8 @@ import pathlib
 import logging
 from abc import ABC, abstractmethod
 
-from tomlkit import load, TOMLDocument
-from tomlkit.container import Container
-from tomlkit.items import Item
-
 # Valid config files will end with this
-VALID_CONFIG_EXTENSION = '.toml'
+VALID_CONFIG_EXTENSION = '.json'
 
 # Name of conf-dir-setting env variable
 CONF_DIR_ENV_NAME = 'PVHOTWATER_CONF_DIR'
@@ -129,7 +122,7 @@ class ConfigBase(ABC):
                 f"{ConfigBase.get_config_path()}."
             )
 
-        self.toml_obj: TOMLDocument
+        self.config_str: str
 
         self._load()
 
@@ -141,18 +134,13 @@ class ConfigBase(ABC):
     def _load(self) -> None:
         """Loads and parses the config file."""
         with open(self._conf_file_path, 'rb') as fp:
-            self.toml_obj = load(fp)
+            self.config_str = fp.read().decode('utf-8')
 
         self.on_load()
 
     def reload(self) -> None:
         """Reloads configuration from disk."""
         self._load()
-
-    # Dictionary access method...
-    def __getitem__(self, key: str) -> Item | Container:
-        """Returns self[key]."""
-        return self.toml_obj.__getitem__(key)
 
     @abstractmethod
     def on_load(self) -> None:

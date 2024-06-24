@@ -86,7 +86,7 @@ To run the web app with development server locally on your computer, use the fol
 FLASK_DEBUG=1 flask --app pvhotwatercore.webapp.app run
 ```
 
-**TODO: add a poetry script or something based on the toml config files to facilitate this.**
+**TODO: add a poetry script or something based on the json config files to facilitate this.**
 
 A test page should then be available at `/test-page/` from the root of the webserver (such as `http://localhost:5000/test-page/`).
 

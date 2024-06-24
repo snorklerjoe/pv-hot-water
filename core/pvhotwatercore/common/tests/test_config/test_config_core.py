@@ -20,20 +20,13 @@ def tmp_conf_path():
     dirpath = tempfile.mkdtemp()
 
     # Populate
-    with open(os.path.join(dirpath, "test.toml"), 'w') as fp:
-        fp.write(
-            """
-                [Test]
-                a=1
-                b="bumble"
-                [Test.today.napoleon]
-                plan="whateverIFeelLikeGosh"
-            """)
+    with open(os.path.join(dirpath, "test.json"), 'w') as fp:
+        fp.write("{}")
 
     yield dirpath
 
     # Clean up
-    os.unlink(os.path.join(dirpath, "test.toml"))
+    os.unlink(os.path.join(dirpath, "test.json"))
     os.rmdir(dirpath)
 
 
@@ -98,7 +91,7 @@ def test_setting_and_getting_config_path(tmp_conf_path):
 
     # Is a directory
     with pytest.raises(FileNotFoundError):
-        core.ConfigBase.set_config_path(os.path.join(tmp_conf_path, 'test.toml'))
+        core.ConfigBase.set_config_path(os.path.join(tmp_conf_path, 'test.json'))
 
     # Set properly
     core.ConfigBase.set_config_path(test_path)
@@ -109,7 +102,7 @@ def test_setting_and_getting_config_path(tmp_conf_path):
         core.ConfigBase.set_config_path('.')
     core._CONFIG_PATH_ACCESSED = False  # Resetting for test
 
-    _ = SimpleConfig("test.toml")
+    _ = SimpleConfig("test.json")
 
     # Already accessed
     with pytest.raises(ValueError):
@@ -131,44 +124,32 @@ def test_config_load(tmp_conf_path):
     core._CONFIG_PATH_ACCESSED = False
     core.ConfigBase.set_config_path(tmp_conf_path)
 
-    a = SimpleConfig("test.toml")
+    a = SimpleConfig("test.json")
 
-    assert a['Test']['a'] == 1
-    assert a['Test']['b'] == "bumble"
-    assert a['Test']['today']['napoleon']['plan'] == "whateverIFeelLikeGosh"
+    assert a.config_str == "{}"
 
     a.reload()
 
-    assert a['Test']['a'] == 1
-    assert a['Test']['b'] == "bumble"
-    assert a['Test']['today']['napoleon']['plan'] == "whateverIFeelLikeGosh"
+    assert a.config_str == "{}"
 
     # Try changing the file:
-    with open(os.path.join(tmp_conf_path, "test.toml"), 'w') as fp:
+    with open(os.path.join(tmp_conf_path, "test.json"), 'w') as fp:
         fp.write(
-            """
-                [Test]
-                a=2
-                b="bumble"
-                [Test.today.napoleon]
-                plan="whateverIFeelLikeGosh"
-            """)
+            """{'a':1}""")
 
-    assert a['Test']['a'] == 1
+    assert a.config_str == "{}"
 
     a.reload()
 
-    assert a['Test']['a'] == 2
-    assert a['Test']['b'] == "bumble"
-    assert a['Test']['today']['napoleon']['plan'] == "whateverIFeelLikeGosh"
+    assert a.config_str == "{'a':1}"
 
 
 def test_instantiation_with_fullpath():
     with pytest.raises(ValueError):
-        SimpleConfig("a" + os.sep + "b.toml")  # Contains os.sep
+        SimpleConfig("a" + os.sep + "b.json")  # Contains os.sep
 
     try:
-        assert SimpleConfig("b.toml") is not None
+        assert SimpleConfig("b.json") is not None
     except FileNotFoundError:
         pass
 
@@ -179,12 +160,12 @@ def test_instantiation_with_badext():
     with pytest.raises(ValueError):
         SimpleConfig("test.yaml")
     with pytest.raises(ValueError):
-        SimpleConfig("test.json")
+        SimpleConfig("test.toml")
     with pytest.raises(ValueError):
         SimpleConfig("test.ini")
 
     try:
-        assert SimpleConfig("test.toml") is not None
+        assert SimpleConfig("test.json") is not None
     except FileNotFoundError:
         pass
 
@@ -200,7 +181,7 @@ def test_abstract_on_load(tmp_conf_path):
         def on_load(self) -> None:
             Counter.counter += 1
 
-    a = MyConfig("test.toml")
+    a = MyConfig("test.json")
 
     assert Counter.counter == 1
 
@@ -216,5 +197,5 @@ def test_abstract_on_load(tmp_conf_path):
 def test_abs_path(tmp_conf_path):
     core._CONFIG_PATH_ACCESSED = False
     core.ConfigBase.set_config_path(tmp_conf_path)
-    a = SimpleConfig("test.toml")
-    assert a.conf_path == os.path.abspath(tmp_conf_path) + os.sep + "test.toml"
+    a = SimpleConfig("test.json")
+    assert a.conf_path == os.path.abspath(tmp_conf_path) + os.sep + "test.json"

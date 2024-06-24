@@ -12,20 +12,14 @@ def tmp_conf_path():
     dirpath = tempfile.mkdtemp()
 
     # Populate
-    with open(os.path.join(dirpath, "test.toml"), 'w') as fp:
+    with open(os.path.join(dirpath, "test.json"), 'w') as fp:
         fp.write(
-            """
-                [Test]
-                a=1
-                b="bumblebee"
-                [Test.today.napoleon]
-                plan="whateverIFeelLikeGosh"
-            """)
+            "{}")
 
     yield dirpath
 
     # Clean up
-    os.unlink(os.path.join(dirpath, "test.toml"))
+    os.unlink(os.path.join(dirpath, "test.json"))
     os.rmdir(dirpath)
 
 
@@ -35,7 +29,7 @@ def static_config(tmp_conf_path):
     core._CONFIG_PATH_ACCESSED = False
     core.ConfigBase.set_config_path(tmp_conf_path)
 
-    yield StaticConfig('test.toml')
+    yield StaticConfig('test.json')
 
     core._IGNORE_PATH_ACCESSED = False
     core._CONFIG_PATH_ACCESSED = False
@@ -44,10 +38,7 @@ def static_config(tmp_conf_path):
 def test_loaded_ok(static_config):
     # Confirms that expected fields are there
     # (sanity check)
-    assert static_config['Test']['a'] == 1
-    assert static_config['Test']['today']['napoleon']['plan'] == 'whateverIFeelLikeGosh'
-    with pytest.raises(KeyError):
-        static_config['a']
+    assert static_config.config_str == "{}"
 
 
 def test_on_load(static_config):
